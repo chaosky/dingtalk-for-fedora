@@ -10,7 +10,7 @@ If you don't want to build it yourself, you can download the binary rpm built by
 
 ## Build
 
-> Tested: version `8.1.0.6021101` builds and runs on Fedora 44.
+> Tested: version `8.2.8.260818002` builds and runs on Fedora 44.
 
 ### build.sh (recommended, no sudo)
 
@@ -18,7 +18,7 @@ Put an official `com.alibabainc.dingtalk_<version>_amd64.deb` next to `build.sh`
 
 ```bash
 ./build.sh                 # use the newest deb in this directory
-./build.sh 8.1.0.6021101   # use the deb matching this version
+./build.sh 8.2.8.260818002   # use the deb matching this version
 ./build.sh path/to/xxx.deb # use a specific deb file
 ```
 
@@ -44,7 +44,7 @@ Copy `dingtalk-bin.spec` to your SPECS dir and the other files to SOURCES, then:
 sudo dnf builddep dingtalk-bin.spec
 spectool -gR dingtalk-bin.spec
 # version defaults to the value in the spec; override it explicitly if needed:
-rpmbuild -ba --define "dt_version 8.1.0.6021101" dingtalk-bin.spec
+rpmbuild -ba --define "dt_version 8.2.8.260818002" dingtalk-bin.spec
 ```
 
 ### What the spec does to make it run on recent Fedora
@@ -68,7 +68,7 @@ mock --rebuild dingtalk-bin*.src.rpm
 This part documents common problems encountered while using this package.
 
 ### Pasted plain text loses newlines?
-DingTalk `8.1.0.6021101` on Linux inserts clipboard text as Markdown, so a single newline is collapsed. This repo preloads `dingtalk-gray-hook.so` to turn that gray switch off. See [docs/plain-text-paste-newlines.md](docs/plain-text-paste-newlines.md).
+DingTalk on Linux inserts clipboard text as Markdown, so a single newline is collapsed. This repo preloads `dingtalk-gray-hook.so` to turn that gray switch off. See [docs/plain-text-paste-newlines.md](docs/plain-text-paste-newlines.md).
 
 ### Elevator.sh is not working?
 DO NOT use the `Elevator.sh` provided by the package, which is deprecated. Rather, use the `/usr/bin/dingtalk` executable created by the

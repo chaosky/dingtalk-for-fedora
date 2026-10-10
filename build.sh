@@ -4,7 +4,7 @@
 #
 # Usage:
 #   ./build.sh                       # use the newest com.alibabainc.dingtalk_*.deb in this dir
-#   ./build.sh 8.1.0.6021101         # use the .deb matching this version
+#   ./build.sh 8.2.8.260818002         # use the .deb matching this version
 #   ./build.sh path/to/xxx.deb       # use a specific .deb file
 #
 # Notes:
@@ -60,7 +60,7 @@ done
 mkdir -p "$topdir"/{SOURCES,SPECS,BUILD,BUILDROOT,RPMS,SRPMS}
 
 cp -f "$deb" "$topdir/SOURCES/com.alibabainc.dingtalk_${version}_amd64.deb"
-for s in dingtalk-bin.desktop dingtalk.svg dingtalk-launcher.sh xdg-open dingtalk-gray-hook.cpp; do
+for s in dingtalk-bin.desktop dingtalk.svg dingtalk-launcher.sh xdg-open dingtalk-gray-hook.cpp dingtalk-log-hook.cpp ssl_peer_certificate_shim.c ssl_peer_certificate_shim.map; do
     [[ -f "$s" ]] || die "missing source file: $s"
     cp -f "$s" "$topdir/SOURCES/"
 done

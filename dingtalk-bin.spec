@@ -5,9 +5,9 @@
 AutoReqProv: no
 
 # Version can be overridden from the command line, e.g.
-#   rpmbuild -ba --define "dt_version 8.1.0.6021101" dingtalk-bin.spec
+#   rpmbuild -ba --define "dt_version 8.2.8.260818002" dingtalk-bin.spec
 # Default keeps the last known-good version for a plain `rpmbuild` run.
-%{!?dt_version: %global dt_version 8.1.0.6021101}
+%{!?dt_version: %global dt_version 8.2.8.260818002}
 
 Name:           dingtalk-bin
 Version:        %{dt_version}
@@ -23,6 +23,9 @@ Source3:        dingtalk.svg
 Source4:        dingtalk-launcher.sh
 Source6:        xdg-open
 Source7:        dingtalk-gray-hook.cpp
+Source8:        dingtalk-log-hook.cpp
+Source9:        ssl_peer_certificate_shim.c
+Source10:       ssl_peer_certificate_shim.map
 BuildRequires:  dpkg
 BuildRequires:  execstack
 BuildRequires:  gcc-c++
@@ -41,7 +44,8 @@ dpkg -X %{S:0} .
 
 %build
 cp %{S:1} ./LICENSE
-g++ -shared -fPIC -O2 -D_GNU_SOURCE -Wl,-z,defs %{S:7} -o dingtalk-gray-hook.so -ldl
+g++ -shared -fPIC -O2 -D_GNU_SOURCE -Wl,-z,defs %{S:7} %{S:8} -o dingtalk-gray-hook.so -ldl
+gcc -shared -fPIC -O2 -D_GNU_SOURCE -Wl,--version-script=%{S:10} -Wl,-z,defs %{S:9} -o libdingtalk_ssl_peer_certificate_shim.so -ldl
 
 %install
 # Main program
@@ -59,18 +63,18 @@ install -d %{buildroot}%{_bindir}
 install -Dm755 %{S:4} %{buildroot}%{_bindir}/dingtalk
 
 # Patch
-# use system cairo: do NOT install the bundled libcairo.so.2
-# fix chinese input in workbench
-rm -rf %{buildroot}/opt/dingtalk-bin/*Release*/{libm.so.6,Resources/{i18n/tool/*.exe,qss/mac,web_content/NativeWebContent_*.zip},libstdc*}
+# Link the system cairo (this deb does not ship libcairo.so.2).
+# Drop bundled copies that clash with Fedora libraries. The set matches
+# Flathub com.dingtalk.DingTalk @ c675939 (8.2.8.260818002).
+rm -rf %{buildroot}/opt/dingtalk-bin/*Release*/{libm.so.6,libstdc*,libharfbuzz*,libgbm*,libcurl.so.4,libz*,libGL*}
+rm -rf %{buildroot}/opt/dingtalk-bin/*Release*/Resources/{i18n/tool/*.exe,qss/mac,web_content/NativeWebContent_*.zip}
 # fix chinese input in workbench
 rm -rf %{buildroot}/opt/dingtalk-bin/*Release*/libgtk-x11-2.0.so.*
 # fix open url
 install -Dm755 %{S:6} -t %{buildroot}/opt/dingtalk-bin/*Release*
 # keep plain-text newlines on paste (see dingtalk-gray-hook.cpp)
 install -Dm755 dingtalk-gray-hook.so -t %{buildroot}/opt/dingtalk-bin/*Release*
-
-# remove unused lib
-rm -rf %{buildroot}/opt/dingtalk-bin/*Release*/{libcurl.so.4,libz*}
+install -Dm755 libdingtalk_ssl_peer_certificate_shim.so -t %{buildroot}/opt/dingtalk-bin/*Release*
 
 # fix "cannot enable executable stack" on newer kernels/glibc loader:
 # clear the executable-stack (RWE GNU_STACK) flag on all bundled shared objects.
@@ -86,6 +90,14 @@ done
 /opt/dingtalk-bin/
 
 %changelog
+* Sat Oct 10 2026 local build - 8.2.8.260818002-1
+- update to 8.2.8.260818002
+- drop bundled harfbuzz, gbm, and GL libraries
+- preload an OpenSSL SSL_get_peer_certificate shim for libutforpc
+
+* Sat Oct 10 2026 local build - 8.1.0.6021101-1
+- silence idle MojoThreadServiceDelegate::PostDealyedTask stderr spam
+
 * Fri Aug 14 2026 local build - 8.1.0.6021101-1
 - preserve newlines when pasting plain text (disable markdown paste gray switch)
 

@@ -10,7 +10,7 @@
 
 ## 构建
 
-> 已验证：`8.1.0.6021101` 可在 Fedora 44 上构建成功并正常运行。
+> 已验证：`8.2.8.260818002` 可在 Fedora 44 上构建成功并正常运行。
 
 ### build.sh（推荐，无需 sudo）
 
@@ -18,7 +18,7 @@
 
 ```bash
 ./build.sh                 # 使用目录下最新的 deb
-./build.sh 8.1.0.6021101   # 使用指定版本对应的 deb
+./build.sh 8.2.8.260818002   # 使用指定版本对应的 deb
 ./build.sh path/to/xxx.deb # 使用指定的 deb 文件
 ```
 
@@ -44,7 +44,7 @@ sudo dnf install ./dingtalk-bin-*.x86_64.rpm
 sudo dnf builddep dingtalk-bin.spec
 spectool -gR dingtalk-bin.spec
 # 版本默认取 spec 里的值，需要时可显式覆盖：
-rpmbuild -ba --define "dt_version 8.1.0.6021101" dingtalk-bin.spec
+rpmbuild -ba --define "dt_version 8.2.8.260818002" dingtalk-bin.spec
 ```
 
 ### spec 为在较新 Fedora 上运行做的处理
@@ -68,7 +68,7 @@ mock --rebuild dingtalk-bin*.src.rpm
 
 ### 粘贴纯文本后换行消失？
 
-钉钉 `8.1.0.6021101` 在 Linux 上将剪贴板文本按 Markdown 解析插入，单独换行会被折叠。本仓库通过 `dingtalk-gray-hook.so` 覆盖相应灰度开关。详见 [docs/plain-text-paste-newlines.md](docs/plain-text-paste-newlines.md)。
+钉钉在 Linux 上将剪贴板文本按 Markdown 解析插入，单独换行会被折叠。本仓库通过 `dingtalk-gray-hook.so` 覆盖相应灰度开关。详见 [docs/plain-text-paste-newlines.md](docs/plain-text-paste-newlines.md)。
 
 ### 无法使用 Elevator.sh?
 **Elevator.sh** 已被弃用，请直接运行 `/usr/bin/dingtalk`。
